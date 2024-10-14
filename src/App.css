@@ -1,0 +1,44 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.blue-border-container {
+  border: 20px solid #2596be; /* Thicker blue border */
+  border-radius: 0; /* Keep outer corners square */
+  padding: 0; /* Ensure no padding inside */
+  margin: 0; /* Remove margin to stick to edges */
+  width: 100%; /* Full width */
+  max-width: none; /* Remove max-width constraint */
+  background-color: #ffffff; /* White background */
+  position: relative; /* Relative positioning for internal adjustments */
+}
+
+.content-wrapper {
+  max-width: 1400px; /* Max width for content */
+  margin: 0 auto; /* Center the content */
+  padding: 0; /* No padding */
+  border-radius: 20px; /* Add rounded corners inside */
+  overflow: hidden; /* Ensure content doesn't spill over the rounded edges */
+  background-color: #fff; /* White background for content */
+}
+
+.panel-signin {
+  margin-top: 0;
+  width: 100%; /* Ensure full width within the wrapper */
+  padding: 0; /* No padding */
+}
+
+/* Remove default padding and margin from any direct children */
+.blue-border-container > * {
+  padding: 0;
+  margin: 0;
+}
