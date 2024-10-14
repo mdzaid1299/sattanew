@@ -12,6 +12,14 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+/* App.css */
+.App {
+  font-family: Arial, sans-serif;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
 
 .App-header {
   background-color: #282c34;
