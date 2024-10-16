@@ -6,7 +6,7 @@ import axios from "axios"; // Import axios
 
 
 function App() {
-  
+
   const [currentDateTime, setCurrentDateTime] = useState("");
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth(); // 0-11
@@ -20,11 +20,17 @@ function App() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth + 1); // +1 to match the dropdown value (1-12)
   const [selectedYear, setSelectedYear] = useState(currentYear);
 
-  const [isLoginVisible, setIsLoginVisible] = useState(false); // State to manage modal visibility
+
+  const [isLoginVisible, setIsLoginVisible] = useState(false); // Login modal visibility
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Login state
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(""); // For handling login errors
+
 
   const [tableData, setTableData] = useState([]);
   const [allData, setAllData] = useState([]); // Store all months' data
-  
+
   useEffect(() => {
     // Fetch initial data from the server
     axios.get("http://localhost:5001/results").then((response) => {
@@ -46,7 +52,7 @@ function App() {
       setTableData(filteredData);
     }
   };
-  
+
   const handleInputChange = (gameIndex, dayIndex, value) => {
     const updatedData = [...tableData];
     updatedData[gameIndex].values[dayIndex] = value;
@@ -73,7 +79,7 @@ function App() {
     // Loop through the current table data to update allData
     tableData.forEach(game => {
       // Find index of existing data for the same month/year
-      const existingIndex = updatedData.findIndex(item => 
+      const existingIndex = updatedData.findIndex(item =>
         item.month === selectedMonth && item.year === selectedYear && item.game === game.game
       );
 
@@ -96,11 +102,28 @@ function App() {
       });
   };
 
-  const handleShowResults = () => {
-    
-    // Refresh the page
-    window.location.reload();
-};
+  const handleLogin = () => {
+    if (username === "admin" && password === "password") {
+      setIsLoggedIn(true);
+      setIsLoginVisible(false);
+      setLoginError(""); // Clear error if login is successful
+    } else {
+      setLoginError("Invalid username or password");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUsername("");
+    setPassword("");
+  };
+
+
+
+  const closeModal = () => {
+    setIsLoginVisible(false);
+    setLoginError(""); // Reset error when modal is closed
+  };
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -129,8 +152,8 @@ function App() {
     window.location.reload(); // Reload to restore the original content
   };
 
-   // Update table data when month or year is changed
-   useEffect(() => {
+  // Update table data when month or year is changed
+  useEffect(() => {
     updateTableData(selectedMonth, selectedYear, allData);
   }, [selectedMonth, selectedYear, allData]);
 
@@ -156,57 +179,57 @@ function App() {
           />
 
           <meta name="robots" content="no index, no follow" />
-    
-    
+
+
           <link
             rel="stylesheet"
             href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           />
-         
 
- 
-                <div className="panel panel-signin" style={{ width: "98%" }}>
-                  <div className="panel-body" style={{ padding: "25px" }}>
-                    <div className="logo text-center">
-                      <img
-                        src={playbazaar}
-                        alt="Play Bazaar"
-                        width="30%"
-                        height
-                      />
-                    </div>
-                    <div className="container">
-                      <div className="container-fluid">
-                        <div className="col-md-2  col-xs-2   grad1"></div>
-                      </div>
-                      <br />
-                    </div>
-                    <h4 className="text-center mb5">Monthly Result Chart</h4>
-                    <h4 className="text-center mb5" id="liveDatetime">
-                      {currentDateTime}
-                    </h4>
-                    <h4 className="text-center mb5" id="liveDatetime" />
-                    <div className="mb30" />
-                    <div className="row" style={{ "margin-bottom": "0px" }}>
-                      <form action="index.php" id="showResult" method="post">
-                        <div className="col-sm-1">
-                          {/*Change Code */}
-                
-                          <select
-                            name="dd_month"
-                            id="dd_month"
-                            className="form-control"
-                            style={{ width: "150px" }}
-                            value={selectedMonth} // Set the current month
-                            onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                          >
-                            {months.map((month, index) => (
-                              <option key={index} value={index + 1}>{month}</option>
-                            ))}
-                          </select>
-                        </div>
-                            <div className="col-sm-2">
-                      <div className="input-group mb15">
+
+
+          <div className="panel panel-signin" style={{ width: "98%" }}>
+            <div className="panel-body" style={{ padding: "25px" }}>
+              <div className="logo text-center">
+                <img
+                  src={playbazaar}
+                  alt="Play Bazaar"
+                  width="30%"
+                  height
+                />
+              </div>
+              <div className="container">
+                <div className="container-fluid">
+                  <div className="col-md-2  col-xs-2   grad1"></div>
+                </div>
+                <br />
+              </div>
+              <h4 className="text-center mb5">Monthly Result Chart</h4>
+              <h4 className="text-center mb5" id="liveDatetime">
+                {currentDateTime}
+              </h4>
+              <h4 className="text-center mb5" id="liveDatetime" />
+              <div className="mb30" />
+              <div className="row" style={{ "margin-bottom": "0px" }}>
+                <form action="index.php" id="showResult" method="post">
+                  <div className="col-sm-1">
+                    {/*Change Code */}
+
+                    <select
+                      name="dd_month"
+                      id="dd_month"
+                      className="form-control"
+                      style={{ width: "150px" }}
+                      value={selectedMonth} // Set the current month
+                      onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                    >
+                      {months.map((month, index) => (
+                        <option key={index} value={index + 1}>{month}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-sm-2">
+                    <div className="input-group mb15">
                       <select
                         name="dd_year"
                         id="dd_year"
@@ -219,288 +242,283 @@ function App() {
                           <option key={year} value={year}>{year}</option>
                         ))}
                       </select>
-                      </div>
-                      
                     </div>
-                        
-                        <div className="col-sm-1">
-                          <div className="input-group mb15">
-                            <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={() => window.location.reload()}
-                         
-                              
-                            >
-                              Show Results
-                            </button>
-                          </div>
-                          {/* input-group */}
-                        </div>
-                      </form>
-                      <div className="col-sm-6">
-                        <div className="input-group mb15">
-                        <button type="button" onClick={printChart} className="btn btn-warning" style={{ marginLeft: "10px" }}>
-                         Print Chart
-                        </button>
-                        <button type="button" className="btn btn-primary" style={{ marginLeft: "10px" }}>
-                        Login
 
-                        </button>
-                          
-                       </div>
-                      </div>
-
-          
-
-                  
-                    </div>
-                   
-                      
-                    <br />
-                    <div className="row"> </div>
-                    <div id="printableArea" style={{ overflow: "auto" }}>
-                      <table
-                        className="table table-striped table-bordered responsive"
-                        cellSpacing={0}
-                        rules="all"
-                        border={0}
-                        id="gvtable"
-                        style={{
-                          width: "100%",
-                          "border-collapse": "collapse",
-                          "font-size": "14px",
-                          color: "#6C7682",
-                    
-                        }}
-                      >
-                  
-                  <thead>
-          <tr style={{ "background-color": "#F7F9FC", color: "#6C7682" }}>
-            <th scope="col">Game</th>
-            {[...Array(31)].map((_, i) => (
-              <th key={i} scope="col">{i + 1}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map((game, gameIndex) => (
-            <tr key={gameIndex}>
-              <td>
-                {/* Editable game name input */}
-                <input
-                  type="text"
-                  value={game.game}
-                  onChange={(e) => handleGameNameChange(gameIndex, e.target.value)}
-                  style={{ width: "100%" }}
-                />
-              </td>
-              {game.values.map((value, dayIndex) => (
-                <td key={dayIndex}>
-                  <input
-                    type="text"
-                    value={value || ""}
-                    onChange={(e) => handleInputChange(gameIndex, dayIndex, e.target.value)}
-                    style={{ width: "100%" }}
-                  />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-        {/* Add row button */}
-        <button type="button"
-                className="btn btn-success"
-
-                onClick={addNewGame} style={{ marginTop: "10px", marginRight: "10px" }}>
-        Add New Game
-      </button>
-
-      {/* Save button */}
-      <button type="button"
-                className="btn btn-success" onClick={handleSave} style={{ marginTop: "10px" }}>
-        Save Data
-      </button>
-                    </div>
                   </div>
-                  <div>
-                    <p>...Paid Advertisment...</p>
-                    <div
-                      style={{
-                        "background-color": "#18C2E5",
-                        color: "#000",
-                        "font-weight": "bold",
-                        "font-style": "bold",
-                        "font-size": "meduim",
-                        "-webkit-text-decoration": "none",
-                        "text-decoration": "none",
-                        "border-width": "3px",
-                        "border-color": "#000",
-                        "border-style": "outset",
-                        margin: "3px",
-                        padding: "10px",
-                        "border-radius": "10px",
-                        "-webkit-text-align": "center",
-                        "text-align": "center",
-                      }}
-                    >
-                      <style
-                        dangerouslySetInnerHTML={{
-                          __html:
-                            "\n\t\t\t\t\t\t\t\tp2 {\n\t\t\t\t\t\t\t\t\ttext-shadow: 1px 1px 3px black;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t",
-                        }}
-                      />
-                      <p2 style={{ "font-size": "33px", color: "#FFF701" }}>
-                        GOLDY BHAI KTM : ONLINE KHAYIWAAL
-                      </p2>
-                      <hr />
-                      <p style={{ "font-size": "22px", color: "#0D092A" }}>
-                        घर पर रह कर ऑनलाइन गेम खेलिए भरोसा आपका जिम्मेदारी हमारी
-                        ! <br />
-                        नोट - आप यह क्रॉसिंग भी प्ले कर सकते है, रेट 10 का 970
-                      </p>
-                      <hr />
-                      <p style={{ "font-size": "18px", color: "#071BC2" }}>
-                        JD-DURGA 2:00PM Last
-                        <br /> दिल्ली बज़ार 3:00PM Last
-                        <br /> श्री गणेश 4:25PM Last
-                        <br />
-                        फरीदाबाद 05:55PM Last
-                        <br /> गाज़ियाबाद 8:40PM Last
-                        <br />
-                        गली 11:30PM Last
-                        <br /> दिसावर 4:30AM Last
-                        <br />
-                      </p>
-                      <hr />
-                      <p style={{ "font-size": "22px", color: "#000" }}>
-                        10 मिनट में पेमेंट की गारंटी CALL &amp; WHATSAPP - ☎️
-                        8586025782
-                      </p>
-                      <a href="tel:>+918570844867">
-                        <button
-                          style={{
-                            height: "40px",
-                            width: "260px",
-                            "background-color": "red",
-                            color: "#FFF",
-                            border: "solid 1px white",
-                            "border-radius": "20px",
-                          }}
-                        >
-                          <font size="4px">
-                            <b>CALL NOW</b>
-                          </font>
-                        </button>
-                      </a>
-                      <a href="https://api.whatsapp.com/send?phone=+918570844867&text=Cobra%20Bhai%20Apna%20Time%20Table%20aur%20Rate%20Card%20Bhejiye%20Payment%20Kaise%20Karna%20Hai.">
-                        <button
-                          style={{
-                            height: "40px",
-                            width: "260px",
-                            "background-color": "green",
-                            color: "#FFF",
-                            border: "solid 1px white",
-                            "border-radius": "20px",
-                          }}
-                        >
-                          <font size="4px">
-                            <b>WHATSAPP CHAT</b>
-                          </font>
-                        </button>
-                      </a>
-                    </div>
-                    {/* Login Dialog */}
-                    <div
-                      id="loginDialog"
-                      className="modal"
-                      style={{
-                        display: "none",
-                        position: "fixed",
-                        "z-index": "1",
-                        left: "0",
-                        top: "0",
-                        width: "100%",
-                        height: "100%",
-                        overflow: "auto",
-                        "background-color": "rgba(0,0,0,0.4)",
-                      }}
-                    >
-                      <div
-                        className="modal-content"
-                        style={{
-                          "background-color": "#fefefe",
-                          margin: "15% auto",
-                          padding: "20px",
-                          border: "1px solid #888",
-                          width: "300px",
-                        }}
+
+                  <div className="col-sm-1">
+                    <div className="input-group mb15">
+                      <button
+                        type="button"
+                        className="btn btn-success"
+                        onClick={() => window.location.reload()}
+
+
                       >
-                        <h2>Login</h2>
+                        Show Results
+                      </button>
+                    </div>
+                    {/* input-group */}
+                  </div>
+                </form>
+                <div className="col-sm-6">
+                  <div className="input-group mb15">
+                    <button type="button" onClick={printChart} className="btn btn-warning" style={{ marginRight: "10px", background: "#f0b848" }}>
+                      Print Chart
+                    </button>
+                    {!isLoggedIn ? (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => setIsLoginVisible(true)}
+                      >
+                        Login
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={addNewGame}
+                          style={{ background: "#bb4329", border: "red" }}
+                        >
+                          Add New Game
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={handleSave}
+                          style={{ marginLeft: "10px" }}
+                        >
+                          Save Data
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={handleLogout} // Call handleLogout to log out the user
+                          style={{ marginLeft: "10px" }}
+                        >
+                          Logout
+                        </button>
+                      </>
+                    )}
+
+
+                  </div>
+                </div>
+
+
+
+
+              </div>
+
+
+              <br />
+              <div className="row"> </div>
+              <div id="printableArea" style={{ overflow: "auto" }}>
+                <table className="table table-striped table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Game</th>
+                      {[...Array(31)].map((_, i) => (
+                        <th key={i}>{i + 1}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableData.map((game, gameIndex) => (
+                      <tr key={gameIndex}>
+                        <td>
+                          {isLoggedIn ? (
+                            <input
+                              type="text"
+                              value={game.game}
+                              onChange={(e) => handleGameNameChange(gameIndex, e.target.value)}
+                              style={{ width: "100%" }}
+                            />
+                          ) : (
+                            <span>{game.game}</span>
+                          )}
+                        </td>
+                        {game.values.map((value, dayIndex) => (
+                          <td key={dayIndex}>
+                            {isLoggedIn ? (
+                              <input
+                                type="text"
+                                value={value || ""}
+                                onChange={(e) => handleInputChange(gameIndex, dayIndex, e.target.value)}
+                                style={{ width: "100%" }}
+                              />
+                            ) : (
+                              <span>{value}</span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+              </div>
+
+            </div>
+            <div>
+              <p>...Paid Advertisment...</p>
+              <div
+                style={{
+                  "background-color": "#18C2E5",
+                  color: "#000",
+                  "font-weight": "bold",
+                  "font-style": "bold",
+                  "font-size": "meduim",
+                  "-webkit-text-decoration": "none",
+                  "text-decoration": "none",
+                  "border-width": "3px",
+                  "border-color": "#000",
+                  "border-style": "outset",
+                  margin: "3px",
+                  padding: "10px",
+                  "border-radius": "10px",
+                  "-webkit-text-align": "center",
+                  "text-align": "center",
+                }}
+              >
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      "\n\t\t\t\t\t\t\t\tp2 {\n\t\t\t\t\t\t\t\t\ttext-shadow: 1px 1px 3px black;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t",
+                  }}
+                />
+                <p2 style={{ "font-size": "33px", color: "#FFF701" }}>
+                  GOLDY BHAI KTM : ONLINE KHAYIWAAL
+                </p2>
+                <hr />
+                <p style={{ "font-size": "22px", color: "#0D092A" }}>
+                  घर पर रह कर ऑनलाइन गेम खेलिए भरोसा आपका जिम्मेदारी हमारी
+                  ! <br />
+                  नोट - आप यह क्रॉसिंग भी प्ले कर सकते है, रेट 10 का 970
+                </p>
+                <hr />
+                <p style={{ "font-size": "18px", color: "#071BC2" }}>
+                  JD-DURGA 2:00PM Last
+                  <br /> दिल्ली बज़ार 3:00PM Last
+                  <br /> श्री गणेश 4:25PM Last
+                  <br />
+                  फरीदाबाद 05:55PM Last
+                  <br /> गाज़ियाबाद 8:40PM Last
+                  <br />
+                  गली 11:30PM Last
+                  <br /> दिसावर 4:30AM Last
+                  <br />
+                </p>
+                <hr />
+                <p style={{ "font-size": "22px", color: "#000" }}>
+                  10 मिनट में पेमेंट की गारंटी CALL &amp; WHATSAPP - ☎️
+                  8586025782
+                </p>
+                <a href="tel:>+918570844867">
+                  <button
+                    style={{
+                      height: "40px",
+                      width: "260px",
+                      "background-color": "red",
+                      color: "#FFF",
+                      border: "solid 1px white",
+                      "border-radius": "20px",
+                    }}
+                  >
+                    <font size="4px">
+                      <b>CALL NOW</b>
+                    </font>
+                  </button>
+                </a>
+                <a href="https://api.whatsapp.com/send?phone=+918570844867&text=Cobra%20Bhai%20Apna%20Time%20Table%20aur%20Rate%20Card%20Bhejiye%20Payment%20Kaise%20Karna%20Hai.">
+                  <button
+                    style={{
+                      height: "40px",
+                      width: "260px",
+                      "background-color": "green",
+                      color: "#FFF",
+                      border: "solid 1px white",
+                      "border-radius": "20px",
+                    }}
+                  >
+                    <font size="4px">
+                      <b>WHATSAPP CHAT</b>
+                    </font>
+                  </button>
+                </a>
+              </div>
+              {/* Login Modal */}
+              {isLoginVisible && (
+                <div className="modal-overlay">
+                  <div className="modal-content">
+                    <h3 style={{ "marginLeft": "10px" }} >Admin Login</h3>
+                    <button className="close-button" onClick={closeModal}>
+                      &times;
+                    </button>
+                    <div className="modal-body">
+                      <div>
+                        <label htmlFor="username">Username:</label>
                         <input
                           type="text"
                           id="username"
-                          placeholder="Username"
-                          style={{
-                            width: "100%",
-                            padding: "5px",
-                            "margin-bottom": "10px",
-                          }}
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
                         />
+                      </div>
+                      <div>
+                        <label htmlFor="password">Password:</label>
                         <input
-                          type="text"
+                          type="password"
                           id="password"
-                          placeholder="Password"
-                          style={{
-                            width: "100%",
-                            padding: "5px",
-                            "margin-bottom": "10px",
-                          }}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
                         />
-                        <button onclick="login()" className="btn btn-success">
+                      </div>
+                      {loginError && <p className="error">{loginError}</p>}
+                      <div className="modal-footer">
+                        <button className="btn btn-primary" onClick={handleLogin}>
                           Login
                         </button>
-                        <button
-                          onclick="closeLoginDialog()"
-                          className="btn btn-danger"
-                          style={{ "margin-left": "10px" }}
-                        >
+                        <button className="btn btn-secondary" onClick={closeModal}>
                           Cancel
                         </button>
                       </div>
                     </div>
-                    <div
-                      className="panel-footer"
-                      style={{
-                        "-webkit-text-align": "center",
-                        "text-align": "center",
-                      }}
-                    >
-                      <style
-                        dangerouslySetInnerHTML={{
-                          __html: "\n\t\tfont-size: 14px\n\t",
-                        }}
-                      />
-                      <small>
-                        <p />
-                        Disclaimer:- PLAYBAZAAR.XYZ : We Follow All Countries
-                        Rules The Site is Only For Entertainment Purposes.{" "}
-                        <br /> The Site Does Not Promote any Betting Activity.
-                        People From Countries Where Gambling is Banned Should
-                        Block Our Site immediately.
-                        <br /> If you are Not Agreed/satisfied With Our Terms
-                        &amp; Conditions Please Quit Right Now. PLAYBAZAAR.XYZ
-                        All Rights Reserved Thank you.*{" "}
-                      </small>{" "}
-                      <p />
-                    </div>
                   </div>
                 </div>
-        
-        </div>
+              )}
+              <div
+                className="panel-footer"
+                style={{
+                  "-webkit-text-align": "center",
+                  "text-align": "center",
+                }}
+              >
+                <style
+                  dangerouslySetInnerHTML={{
+                    __html: "\n\t\tfont-size: 14px\n\t",
+                  }}
+                />
+                <small>
+                  <p />
+                  Disclaimer:- PLAYBAZAAR.ONLINE : We Follow All Countries
+                  Rules The Site is Only For Entertainment Purposes.{" "}
+                  <br /> The Site Does Not Promote any Betting Activity.
+                  People From Countries Where Gambling is Banned Should
+                  Block Our Site immediately.
+                  <br /> If you are Not Agreed/satisfied With Our Terms
+                  &amp; Conditions Please Quit Right Now. PLAYBAZAAR.ONLINE
+                  All Rights Reserved Thank you.*{" "}
+                </small>{" "}
+                <p />
+              </div>
+            </div>
+          </div>
 
+        </div>
       </div>
     </div>
   );
