@@ -15,7 +15,9 @@ const loadData = () => {
   const data = fs.readFileSync(path.join(__dirname, "data.json"));
   return JSON.parse(data);
 };
-
+app.get('/', (req, res) => {
+  res.send('Hello, world!');
+});
 // Save data to JSON file
 const saveData = (data) => {
   fs.writeFileSync(path.join(__dirname, "data.json"), JSON.stringify(data, null, 2));
