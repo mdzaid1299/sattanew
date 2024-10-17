@@ -216,7 +216,7 @@ function App() {
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
                       >
                         {/* You can adjust the range of years as needed */}
-                        {[2020, 2021, 2022, 2023, 2024].map(year => (
+                        {[2020, 2021, 2022, 2023, 2024,2025,2026,2027].map(year => (
                           <option key={year} value={year}>{year}</option>
                         ))}
                       </select>
