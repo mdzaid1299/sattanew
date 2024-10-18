@@ -4,8 +4,11 @@ import playbazaar from "./playbazaar.png";
 
 import axios from "axios"; // Import axios
 
-import { useAuth0 } from '@auth0/auth0-react';
+import { auth, signInWithEmailAndPassword, signOut } from './firebase';
 
+import Modal from 'react-modal'; // Import react-modal
+
+Modal.setAppElement('#root'); // Set the root element for accessibility
 
 function App() {
 
@@ -25,7 +28,23 @@ function App() {
   const [tableData, setTableData] = useState([]);
   const [allData, setAllData] = useState([]); // Store all months' data
 
-  const { loginWithRedirect, logout, isAuthenticated, user } = useAuth0();
+  const [user, setUser] = useState(null); // Firebase user
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [email, setEmail] = useState(""); // To capture email input
+  const [password, setPassword] = useState(""); // To capture password input
+  const [error, setError] = useState(""); // For error handling
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
 
   useEffect(() => {
     // Fetch initial data from the server
@@ -134,6 +153,36 @@ function App() {
   useEffect(() => {
     updateTableData(selectedMonth, selectedYear, allData);
   }, [selectedMonth, selectedYear, allData]);
+
+  // Handle login with email and password
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setIsModalOpen(false); // Close modal after successful login
+      setError(""); // Clear any error messages
+    } catch (error) {
+      setError(error.message); // Show error message if login fails
+      console.error("Login error", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Logout error", error);
+    }
+  };
+  // Function to open the modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+// Function to close the modal
+const closeModal = () => {
+  setIsModalOpen(false);
+  setError(""); // Clear any error when closing the modal
+};
 
 
   return (
@@ -246,12 +295,12 @@ function App() {
                     </button>
                     
 
-                    {!isAuthenticated ? (
+                    {!user ? (
                       <button
                         type="button"
                         className="btn btn-primary"
                         style={{ marginLeft: "10px" }}
-                        onClick={loginWithRedirect}
+                        onClick={openModal}
                       >
                         Login
                       </button>
@@ -278,7 +327,7 @@ function App() {
                           type="button"
                           className="btn btn-danger"
                           // onClick={handleLogout} // Call handleLogout to log out the user
-                          onClick={() => logout({ returnTo: window.location.origin })}
+                          onClick={handleLogout}
                           style={{ marginLeft: "10px" }}
                         >
                           Logout
@@ -312,7 +361,7 @@ function App() {
                     {tableData.map((game, gameIndex) => (
                       <tr key={gameIndex}>
                         <td>
-                          {isAuthenticated ? (
+                          {user ? (
                             <input
                               type="text"
                               value={game.game}
@@ -325,7 +374,7 @@ function App() {
                         </td>
                         {game.values.map((value, dayIndex) => (
                           <td key={dayIndex}>
-                            {isAuthenticated ? (
+                            {user ? (
                               <input
                                 type="text"
                                 value={value || ""}
@@ -465,6 +514,42 @@ function App() {
 
         </div>
       </div>
+       {/* Modal for Login */}
+       <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Login Modal"
+        className="login-modal"
+        overlayClassName="login-modal-overlay"
+      >
+        <h2>Login</h2>
+        <p>Please log in with your email and password.</p>
+        
+        {error && <p style={{ color: 'red' }}>{error}</p>} {/* Show error message if there's one */}
+        
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)} // Capture email input
+          className="form-control"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)} // Capture password input
+          className="form-control"
+          style={{ marginTop: "10px" }}
+        />
+        
+        <button onClick={handleLogin} className="btn btn-primary" style={{ marginTop: "10px" }}>
+          Login with Email
+        </button>
+        <button onClick={closeModal} className="btn btn-secondary" style={{ marginTop: "10px" }}>
+          Cancel
+        </button>
+      </Modal>
     </div>
   );
 }
