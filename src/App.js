@@ -125,17 +125,30 @@ function App() {
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
-      const formattedDateTime = now
-        .toISOString()
-        .replace("T", " ")
-        .split(".")[0];
+  
+      // Format the date as YYYY-MM-DD
+      const formattedDate = now.toISOString().split('T')[0];
+  
+      // Format the time in 12-hour format with AM/PM
+      const formattedTime = now.toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true,
+      });
+  
+      // Combine date and time
+      const formattedDateTime = `${formattedDate} ${formattedTime}`;
+  
       setCurrentDateTime(formattedDateTime);
     };
-
+  
     const intervalId = setInterval(updateDateTime, 1000);
     updateDateTime();
     return () => clearInterval(intervalId);
   }, []);
+  
+
 
 
 
@@ -240,8 +253,6 @@ const closeModal = () => {
               <div className="row" style={{ "margin-bottom": "0px" }}>
                 <form action="index.php" id="showResult" method="post">
                   <div className="col-sm-1">
-                    {/*Change Code */}
-
                     <select
                       name="dd_month"
                       id="dd_month"
@@ -265,7 +276,7 @@ const closeModal = () => {
                         onChange={(e) => setSelectedYear(Number(e.target.value))}
                       >
                         {/* You can adjust the range of years as needed */}
-                        {[2020, 2021, 2022, 2023, 2024,2025,2026,2027].map(year => (
+                        {[2022, 2023, 2024].map(year => (
                           <option key={year} value={year}>{year}</option>
                         ))}
                       </select>
@@ -290,7 +301,7 @@ const closeModal = () => {
                 </form>
                 <div className="col-sm-6">
                   <div className="input-group mb15">
-                    <button type="button" onClick={printChart} className="btn btn-warning" style={{ marginRight: "10px", background: "#f0b848" }}>
+                    <button type="button" onClick={printChart} className="btn btn-warning" style={{ marginLeft: "45px", background: "#f0b848" }}>
                       Print Chart
                     </button>
                     
@@ -498,13 +509,13 @@ const closeModal = () => {
                 />
                 <small>
                   <p />
-                  Disclaimer:- PLAYBAZAAR.ONLINE : We Follow All Countries
-                  Rules The Site is Only For Entertainment Purposes.{" "}
+                  Disclaimer:- PLAYBAZAR.ONLINE : We Follow All Countries
+                  Rules The Site is Only For Informational Purposes.{" "}
                   <br /> The Site Does Not Promote any Betting Activity.
                   People From Countries Where Gambling is Banned Should
                   Block Our Site immediately.
                   <br /> If you are Not Agreed/satisfied With Our Terms
-                  &amp; Conditions Please Quit Right Now. PLAYBAZAAR.ONLINE
+                  &amp; Conditions Please Quit Right Now. PLAYBAZAR.ONLINE
                   All Rights Reserved Thank you.*{" "}
                 </small>{" "}
                 <p />
